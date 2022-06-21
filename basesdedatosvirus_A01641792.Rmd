@@ -1,0 +1,103 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r}
+library("seqinr")
+```
+
+
+```{r}
+zika = read.fasta("Zika")
+dengue = read.fasta("dENGUE")
+h1n1 = read.fasta("H1N1")
+mers = read.fasta("MERS")
+covid = read.fasta("Covid")
+```
+
+1. ¿Cuál es el tamaño de cada secuencia?
+
+
+```{r}
+
+length(zika[[1]])
+length(dengue[[1]])
+length(h1n1[[1]])
+length(mers[[1]])
+length(covid[[1]])
+
+```
+2. ¿Cúal es la composición de nucleótidos de cada secuencia?
+
+```{r}
+count(zika[[1]], 1)
+count(dengue[[1]], 1)
+count(h1n1[[1]], 1)
+count(mers[[1]], 1)
+count(covid[[1]], 1)
+```
+3. ¿Cuál es el contenido de GC de cada virus?
+
+
+```{r}
+count(zika[[1]],2)["gc"]
+count(dengue[[1]],2)["gc"]
+count(h1n1[[1]],2)["gc"]
+count(mers[[1]],2)["gc"]
+count(covid[[1]],2)["gc"]
+
+```
+4. Crear una función para obtener la secuencia en complementaria e imprimirla por cada secuencia, 
+ejemplo: 
+Virus original: agttgttagt ctacgtggac cgacaagaac
+Complementaria: tcaacaatca gatgcacctg gctgttcttg
+
+```{r}
+compuesta = function(DNA){
+  
+  return (comp(DNA))
+}
+
+comp_zika = compuesta(zika[[1]])
+comp_zika
+comp_dengue = compuesta(dengue[[1]])
+comp_dengue
+comp_h1n1 = compuesta(h1n1[[1]])
+comp_h1n1
+comp_mers = compuesta(mers[[1]])
+comp_mers
+comp_covid = compuesta(covid[[1]])
+comp_covid
+```
+
+5. Crear una gráfica de resumen para comparar la composición de nucleótidos de las 5 secuencias.
+```{r}
+
+library(ggplot2)
+
+#virus = c("zika","dengue","h1n1","mers","covid")
+virus = c(rep("zika",4),rep("dengue",4),rep("h1n1",4),rep("mers",4),rep("covid",4))
+nucleótido = rep(c("a","c","g","t"),5)
+cantidad = c(2956,3426,771,7900,8954,
+           2383,2240,433,6116,5492,
+           3157,2770,591,6304,5863,
+           2312,2299,498,9799,9594)
+
+#a = c(2956,3426,771,7900,8954)
+#c = c(2383,2240,433,6116,5492)
+#g = c(3157,2770,591,6304,5863)
+#t = c(2312,2299,498,9799,9594)
+
+df = data.frame(virus = virus,nucleótido=nucleótido,cantidad = cantidad)
+df
+df[1,]
+
+ggplot(df, aes(fill=virus, y=cantidad, x=nucleótido)) + 
+    geom_bar(position="dodge", stat="identity")
+
+
+
+
+```
+

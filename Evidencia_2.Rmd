@@ -1,0 +1,141 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+```{r}
+library("seqinr")
+```
+
+Obtén las secuencias de las variantes de SARS-CoV-2 desde el NCBI  o el buscador de virus del NCBI .
+```{r}
+alpha = read.fasta("ALPHA")
+delta = read.fasta("DELTA")
+gamma = read.fasta("GAMMA")
+beta= read.fasta("BETA")
+omicron = read.fasta("OMICRON")
+cov2 = read.fasta("COV2")
+mers = read.fasta("Mers")
+cfb = read.fasta("CFB")
+hku1= read.fasta("HKU1")
+nl63= read.fasta("NL63")
+oc43 = read.fasta("OC43")
+e229 = read.fasta("229E")
+emc = read.fasta("EMC")
+
+
+```
+
+2-Calcula la longitud de las secuencias de cada variante.
+
+
+```{r}
+
+length(alpha[[1]])
+length(delta[[1]])
+length(gamma[[1]])
+length(beta[[1]])
+length(omicron[[1]])
+length(cov2[[1]])
+length(mers[[1]])
+length(cfb[[1]])
+length(hku1[[1]])
+length(nl63[[1]])
+length(oc43[[1]])
+length(e229[[1]])
+length(emc[[1]])
+```
+2. ¿Cúal es la composición de nucleótidos de cada secuencia?
+
+```{r}
+count(alpha[[1]],1)
+count(delta[[1]],1)
+count(gamma[[1]],1)
+count(beta[[1]],1)
+count(omicron[[1]],1)
+count(cov2[[1]],1)
+count(mers[[1]],1)
+count(cfb[[1]],1)
+count(hku1[[1]],1)
+count(nl63[[1]],1)
+count(oc43[[1]],1)
+count(e229[[1]],1)
+count(emc[[1]],1)
+
+```
+
+3-Crea una gráfica donde compares las bases de ADN que componen a cada una de las variantes del virus.
+```{r}
+
+library(ggplot2)
+
+#virus = c("zika","dengue","h1n1","mers","covid")
+virus = c(rep("alpha",4),rep("delta",4),rep("gamma",4),rep("beta",4),rep("omicron",4),rep("Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1",4),rep("Middle East respiratory syndrome-related coronavirus isolate MERS-CoV",4),rep("SARS coronavirus isolate CFB/SZ/94/03",4),rep("Human coronavirus HKU1",4),rep("Human Coronavirus NL63",4),rep("Human coronavirus OC43 strain TKU-2021A",4),rep("Human coronavirus 229E strain TKU-2021B",4),rep("Human betacoronavirus 2c EMC/2012, complete genome",4))
+nucleótido = rep(c("a","c","g","t"),13)
+cantidad = c(count(alpha[[1]],1)["a"],count(alpha[[1]],1)["c"],count(alpha[[1]],1)["g"],count(alpha[[1]],1)["t"],
+           count(delta[[1]],1)["a"],count(delta[[1]],1)["c"],count(delta[[1]],1)["g"],count(delta[[1]],1)["t"],
+           count(gamma[[1]],1)["a"],count(gamma[[1]],1)["c"],count(gamma[[1]],1)["g"],count(gamma[[1]],1)["t"],
+           count(beta[[1]],1)["a"],count(beta[[1]],1)["c"],count(beta[[1]],1)["g"],count(beta[[1]],1)["t"],
+           count(omicron[[1]],1)["a"],count(omicron[[1]],1)["c"],count(omicron[[1]],1)["g"],count(omicron[[1]],1)["t"],
+           count(cov2[[1]],1)["a"],count(cov2[[1]],1)["c"],count(cov2[[1]],1)["g"],count(cov2[[1]],1)["t"],
+           count(mers[[1]],1)["a"],count(mers[[1]],1)["c"],count(mers[[1]],1)["g"],count(mers[[1]],1)["t"],
+           count(cfb[[1]],1)["a"],count(cfb[[1]],1)["c"],count(cfb[[1]],1)["g"],count(cfb[[1]],1)["t"],
+           count(hku1[[1]],1)["a"],count(hku1[[1]],1)["c"],count(hku1[[1]],1)["g"],count(hku1[[1]],1)["t"],
+           count(nl63[[1]],1)["a"],count(nl63[[1]],1)["c"],count(nl63[[1]],1)["g"],count(nl63[[1]],1)["t"],
+           count(oc43[[1]],1)["a"],count(oc43[[1]],1)["c"],count(oc43[[1]],1)["g"],count(oc43[[1]],1)["t"],
+           count(e229[[1]],1)["a"],count(e229[[1]],1)["c"],count(e229[[1]],1)["g"],count(e229[[1]],1)["t"],
+           count(emc[[1]],1)["a"],count(emc[[1]],1)["c"],count(emc[[1]],1)["g"],count(emc[[1]],1)["t"])
+
+df = data.frame(virus = virus,nucleótido=nucleótido,cantidad = cantidad)
+df
+df[1,]
+
+ggplot(df, aes(fill=virus, y=cantidad, x=nucleótido)) + 
+    geom_bar(position="dodge", stat="identity")
+```
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    library("BiocManager")
+library("Biostrings")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+   library("BiocManager")
+library("DECIPHER")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+   library("BiocManager")
+library("ggtree")
+library(Biostrings)
+library(seqinr)
+library(adegenet) 
+library(ape) 
+library(ggtree)
+library(DECIPHER)
+library(viridis)
+library(ggplot2)
+
+virus=c("MT873893.1","OM725650.1","MT835383.1","MT439595.1","OM725268.1","NC_045512.2","OL622036","AY545919","NC_006577","NC_005831","OK662397","OK662398","JX869059")
+virus_sequences <- read.GenBank(virus)
+write.dna(virus_sequences,  file ="virus_evidencia.fasta", format = "fasta", append =
+FALSE, nbcol = 6, colsep = " ", colw = 10)
+
+```
+```{r}
+virus_evidencia_no_alineada <-readDNAStringSet("virus_evidencia.fasta", format = "fasta")
+virus_evidencia_no_alineada
+virus_evidencia_no_alineada <- OrientNucleotides(virus_evidencia_no_alineada)
+virus_evidencia_alineada <- AlignSeqs(virus_evidencia_no_alineada)
+writeXStringSet(virus_evidencia_alineada, file="virus_evidencia_alineada.fasta")
+BrowseSeqs(virus_evidencia_alineada, highlight=0)
+```
+```{r}
+writeXStringSet(virus_evidencia_alineada, file="virus_evidencia_alineada.fasta")
+virus_alineados <- read.alignment("virus_evidencia_alineada.fasta", format = "fasta")
+matriz_distancia <- dist.alignment(virus_alineados, matrix = "similarity")
+virus_tree <- nj(matriz_distancia)
+class(virus_tree) 
+virus_tree <- ladderize(virus_tree)
+plot(virus_tree, cex = 0.6)
+title("Arbol de raices de los distintos coronavirus que afectan humanos")
+```
+

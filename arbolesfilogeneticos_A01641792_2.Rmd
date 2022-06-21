@@ -1,0 +1,77 @@
+---
+title: "Arboles filogenicos"
+output: html_document
+date: '2022-05-01'
+---
+
+
+
+```{r}
+virus <- c(  "JX869059", "AY508724", "MN908947", "AY390556", "AY278489", "MN985325","AY485277","MT292571")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("Biostrings")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("DECIPHER")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ggtree")
+install.packages("Biostrings") 
+library(Biostrings)
+install.packages("seqinr") 
+library(seqinr)
+install.packages("adegenet") 
+library(adegenet) 
+library(ape) 
+install.packages("ggtree")
+library(ggtree)
+install.packages("DECIPHER")
+library(DECIPHER)
+install.packages("viridis") 
+library(viridis)
+library(ggplot2)
+
+```
+
+```{r}
+virus_aligned <- read.alignment("virus_seq_align.fasta", format = "fasta")
+matriz_distancia <- dist.alignment(virus_aligned, matrix = "similarity")
+
+```
+
+```{r}
+temp <- as.data.frame(as.matrix(matriz_distancia))
+table.paint(temp, cleg=0, clabel.row=.5, clabel.col=.5) + scale_color_viridis()
+```
+```{r}
+virus_tree <- nj(matriz_distancia)
+class(virus_tree) 
+virus_tree <- ladderize(virus_tree)
+
+```
+```{r}
+plot(virus_tree, cex = 0.6)
+title("A Novel Coronavirus from Patients with Pneumonia in China, 2019")
+
+```
+```{r}
+ggtree(virus_tree)
+ggtree(virus_tree, layout="slanted") 
+ggtree(virus_tree, layout="circular")
+ggtree(virus_tree, layout="fan", open.angle=120)
+ggtree(virus_tree, layout="equal_angle")
+ggtree(virus_tree, branch.length='none')
+ggtree(virus_tree, branch.length='none', layout='circular')
+ggtree(virus_tree ) + geom_tiplab()
+
+```
+
+```{r}
+write('PATH="${RTOOLS40_HOME}//usr//bin;${PATH}"', file = "~/.Renviron", append = TRUE)
+Sys.which("make")
+install.packages(("ggmsa"))
+library(ggmsa)
+ggmsa(virus_seq_not_align, 320, 360, color = "Chemistry_AA")+
+```
+
